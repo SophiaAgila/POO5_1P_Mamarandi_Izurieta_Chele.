@@ -8,17 +8,20 @@ public class Editor extends Usuario {
 
     @Override
     public void generarCorreo() {
-        // Implementar lógica para generar correo
+        String emailDominio= "jorunal.com";
+        String email= (nombre+"."+apellido+"@"+emailDominio).toLowerCase().replace("",".");
+        this.correoElectronico= email;
     }
 
     @Override
     public void decidirSobreArticulo() {
-        // Implementar lógica para decidir sobre artículo
+         boolean decision = tomarDecision(calidad, relevancia, cumplimientoNormas);
+         registrarDecisionFinal(codigoArticulo, decision);
     }
 
-    public void registrarDecisionFinal(String codigoArticulo, boolean decision) {
-        // Implementar lógica para registrar la decisión final sobre el artículo
-        // Actualizar archivo revisiones.txt
+    public registrarDecisionFinal(String codigoArticulo) {
+        return boolean;
+        
     }
 
     // Getters y Setters
