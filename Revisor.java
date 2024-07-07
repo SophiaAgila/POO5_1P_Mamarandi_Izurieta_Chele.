@@ -1,80 +1,36 @@
-import java.io.BufferedWriter;
-import java.io.FileWriter;
+package main.java.com.revista.entidad;
+
 import java.io.IOException;
 
-public class Revisor {
-    private int userId;
-    private String nombre;
-    private String apellido;
-    private String correoElectronico;
-    private String contraseña;
+import main.java.com.revista.Sistema;
+import main.java.com.revista.util.Persistencia;
+import main.java.com.revista.util.Archivos;
+import main.java.com.revista.util.Correos;
+import main.java.com.revista.util.EstadoRevision;
+
+public class Revisor extends Usuario {
     private String especialidad;
-    private int numArticulos;
+    private int articulosRevisados;
 
-    public Revisor(int userId, String nombre, String apellido, String correoElectronico, String contraseña, String especialidad, int numArticulos) {
-        this.userId = userId;
-        this.nombre = nombre;
-        this.apellido = apellido;
-        this.correoElectronico = correoElectronico;
-        this.contraseña = contraseña;
+    /**
+     * Instancia un nuevo revisor
+     * @param codigo Código del revisor
+     * @param nombre Nombre del revisor
+     * @param apellido Apellido del revisor
+     * @param correo Correo del revisor
+     * @param especialidad Especialidad del revisor
+     * @param articulosRevisados Número de artículos revisados por el revisor
+     */
+    public Revisor(String codigo, String nombre, String apellido, String correo, String especialidad, int articulosRevisados) {
+        super(codigo, nombre, apellido, correo);
         this.especialidad = especialidad;
-        this.numArticulos = numArticulos;
+        this.articulosRevisados = articulosRevisados;
     }
 
-    public void aceptarAsignacion() {
-        // metodo para aceptarAsignacion 
-    }
-
-    public void guardarDatosRevisor() {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("revisores.txt", true))) {
-            writer.write(userId + "," + nombre + "," + apellido + "," + correoElectronico + "," + contraseña + "," + especialidad + "," + numArticulos);
-            writer.newLine();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    // Getters y Setters
-    public int getUserId() {
-        return userId;
-    }
-
-    public void setUserId(int userId) {
-        this.userId = userId;
-    }
-
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public String getApellido() {
-        return apellido;
-    }
-
-    public void setApellido(String apellido) {
-        this.apellido = apellido;
-    }
-
-    public String getCorreoElectronico() {
-        return correoElectronico;
-    }
-
-    public void setCorreoElectronico(String correoElectronico) {
-        this.correoElectronico = correoElectronico;
-    }
-
-    public String getContraseña() {
-        return contraseña;
-    }
-
-    public void setContraseña(String contraseña) {
-        this.contraseña = contraseña;
-    }
-
+    
+    /** 
+     * @return String
+     */
     public String getEspecialidad() {
         return especialidad;
     }
@@ -83,24 +39,65 @@ public class Revisor {
         this.especialidad = especialidad;
     }
 
-    public int getNumArticulos() {
-        return numArticulos;
+    public int getArticulosRevisados() {
+        return articulosRevisados;
     }
 
-    public void setNumArticulos(int numArticulos) {
-        this.numArticulos = numArticulos;
+    public void setArticulosRevisados(int numeroArticulosRevisados) {
+        this.articulosRevisados = numeroArticulosRevisados;
     }
 
     @Override
+    /**
+     * Devuelve una representación en cadena del Revisor
+     */
     public String toString() {
-        return "Revisor{" +
-                "userId=" + userId +
-                ", nombre='" + nombre + '\'' +
-                ", apellido='" + apellido + '\'' +
-                ", correoElectronico='" + correoElectronico + '\'' +
-                ", contraseña='" + contraseña + '\'' +
-                ", especialidad='" + especialidad + '\'' +
-                ", numArticulos=" + numArticulos +
-                '}';
+        return String.format("Revisor: %s %s\nCorreo: %s\n" +
+                "Especialidad: %s\nArtículos revisados: %d",
+                nombre, apellido, correo, especialidad, articulosRevisados);
+    }
+
+    @Override
+    /**
+     * Genera un correo electrónico con el asunto y mensaje dados
+     * y lo envía al destinatario
+     * @param destinatario Correo del destinatario
+     * @param asunto Asunto del correo
+     * @param mensaje Cuerpo del correo
+     * @return true si el correo se envió con éxito, false en caso contrario
+     */
+    public boolean generarCorreo(String destinatario, String asunto, String mensaje) {
+        return Correos.enviar(destinatario, asunto, mensaje);
+    }
+
+    @Override
+    /**
+     * Revisor ingresa comentarios y decide si aceptar o rechazar un artículo
+     * @param articulo Artículo a revisar
+     */
+    public void decidirSobreArticulo(Articulo articulo) {
+        System.out.println("Ingrese sus comentarios: (en una sola línea y sin \";\")");
+        String comentarios = Sistema.sc.nextLine().strip();
+        System.out.println("¿Aceptar el artículo? S\\N");
+        String respuesta = Sistema.sc.nextLine().strip();
+        String decision = respuesta.equalsIgnoreCase("S") ? "Aceptado" : "Rechazado";
+        String registro = EstadoRevision.REVISADO + ";" + codigo + ";" + articulo.getCodigo() + ";" + comentarios + ";" + decision;
+        try {
+            String revisorVieja = Persistencia.busquedaEnArchivo(Archivos.REVISORES, codigo);
+            String[] revisorNueva = revisorVieja.split(",");
+            revisorNueva[5] = String.valueOf(Integer.parseInt(revisorNueva[5]) + 1);
+            Persistencia.modificarLineaDeArchivo(Archivos.REVISORES, revisorVieja,
+                    String.join(",", revisorNueva));
+
+            String revisionVieja = Persistencia.busquedaEnArchivo(Archivos.REVISIONES,
+                    codigo + ";" + articulo.getCodigo());
+            Persistencia.modificarLineaDeArchivo(Archivos.REVISIONES, revisionVieja, registro);
+
+            System.out.println("Revisión enviada con éxito");
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("Error al enviar revisión");
+        }
     }
 }
+
