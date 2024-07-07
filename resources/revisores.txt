@@ -1,0 +1,9 @@
+Analizado;R001;-510248507;Alexander tiene toda la razon del mundo, denle un grammy ahora MISMOOO;Aceptado
+Analizado;R002;-510248507;Aceptalo;Rechazado
+Analizado;R001;272609820;Jean es mi crush;Aceptado
+Revisado;R002;272609820;No;Rechazado
+Verificado;E001;-510248507;Aceptar
+Verificado;E002;272609820;Rechazar
+Analizado;R452;-1337718158;Me encanto, a mi tmbn me gusta Liss;Aceptado
+Analizado;R432;-1337718158;Yo tambien la amo profe, casemonos ahora;Aceptado
+Verificado;E001;-1337718158;Aceptar
