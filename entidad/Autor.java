@@ -1,46 +1,46 @@
-import java.io.BufferedWriter;
-import java.io.FileWriter;
+package main.java.com.revista.entidad;
+
 import java.io.IOException;
 
+import main.java.com.revista.util.Persistencia;
+import main.java.com.revista.util.Archivos;
+
 public class Autor {
-    private String codigoIdentificacion;
+    private String codigo;
     private String nombre;
     private String apellido;
-    private String correoElectronico;
+    private String correo;
     private String institucion;
     private String campoInvestigacion;
 
-    public Autor(String codigoIdentificacion, String nombre, String apellido, String correoElectronico, String institucion, String campoInvestigacion) {
-        this.codigoIdentificacion = codigoIdentificacion;
+    /**
+     * Instancia un nuevo autor
+     * @param nombre Nombre del autor
+     * @param apellido Apellido del autor
+     * @param correo Correo del autor
+     * @param institucion Institución a la que pertenece el autor
+     * @param campoInvestigacion Campo de investigación del autor
+     */
+    public Autor(String nombre, String apellido, String correo, String institucion,
+            String campoInvestigacion) {
         this.nombre = nombre;
         this.apellido = apellido;
-        this.correoElectronico = correoElectronico;
+        this.correo = correo;
         this.institucion = institucion;
         this.campoInvestigacion = campoInvestigacion;
+        this.codigo = this.hashCode() + "";
     }
 
-    public void subirArticulo(Articulo articulo) {
-        // Guardar datos del autor y del artículo en los archivos correspondientes
-        guardarDatosAutor();
-        articulo.guardarDatosArticulo();
+    
+    /** 
+     * @return String
+     */
+    public String getCodigo() {
+        return codigo;
     }
 
-    public void guardarDatosAutor() {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("investigadores.txt", true))) {
-            writer.write(codigoIdentificacion + "," + nombre + "," + apellido + "," + correoElectronico + "," + institucion + "," + campoInvestigacion);
-            writer.newLine();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    // Getters y Setters
-    public String getCodigoIdentificacion() {
-        return codigoIdentificacion;
-    }
-
-    public void setCodigoIdentificacion(String codigoIdentificacion) {
-        this.codigoIdentificacion = codigoIdentificacion;
+    public void setCodigo(String codigo) {
+        this.codigo = codigo;
     }
 
     public String getNombre() {
@@ -59,12 +59,12 @@ public class Autor {
         this.apellido = apellido;
     }
 
-    public String getCorreoElectronico() {
-        return correoElectronico;
+    public String getCorreo() {
+        return correo;
     }
 
-    public void setCorreoElectronico(String correoElectronico) {
-        this.correoElectronico = correoElectronico;
+    public void setCorreo(String correo) {
+        this.correo = correo;
     }
 
     public String getInstitucion() {
@@ -84,14 +84,53 @@ public class Autor {
     }
 
     @Override
-    public String toString() {
-        return "Autor{" +
-                "codigoIdentificacion='" + codigoIdentificacion + '\'' +
-                ", nombre='" + nombre + '\'' +
-                ", apellido='" + apellido + '\'' +
-                ", correoElectronico='" + correoElectronico + '\'' +
-                ", institucion='" + institucion + '\'' +
-                ", campoInvestigacion='" + campoInvestigacion + '\'' +
-                '}';
+    /**
+     * Devuelve un entero hasheado basado en el nombre, apellido y correo del autor
+     * @return Entero hasheado
+     */
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((nombre == null) ? 0 : nombre.hashCode());
+        result = prime * result + ((apellido == null) ? 0 : apellido.hashCode());
+        result = prime * result + ((correo == null) ? 0 : correo.hashCode());
+        return result;
     }
+
+    @Override
+    /**
+     * Devuelve una representación en cadena del autor
+     */
+    public String toString() {
+        return String.format("%s,%s,%s,%s,%s,%s", codigo, nombre, apellido, correo, institucion, campoInvestigacion);
+    }
+
+    /**
+     * Registra el artículo en el archivo de artículos
+     * @param articulo Artículo a registrar
+     * @return true si el artículo se registró con éxito, false en caso contrario
+     */
+    public boolean someterArticulo(Articulo articulo) {
+        try {
+            Persistencia.escribirArchivo(Archivos.ARTICULOS, articulo.toString());
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * Registra al autor en el archivo de autores
+     */
+    public void registrarse(){
+        try {
+            Persistencia.escribirArchivo(Archivos.AUTORES, this.toString());
+            System.out.println("Autor registrado con éxito");
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("Error al registrar autor");
+        }
+    }
+
 }
