@@ -1,0 +1,4 @@
+editor1,password,E,E001
+revisor1,password,R,R432
+editor2,password,E,E002
+revisor2,password,R,R452
