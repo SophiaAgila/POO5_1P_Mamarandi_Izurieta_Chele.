@@ -1,5 +1,5 @@
 package main.java.com.revista.entidad;
-o
+
 import java.io.IOException;
 
 import main.java.com.revista.util.Persistencia;
