@@ -1,0 +1,4 @@
+Pendiente;R452;-1719138934
+Revisado;R001;-1719138934;S;Aceptado
+Revisado;R001;3610081;si esta bien subirlo;Aceptado
+Pendiente;R452;3610081
