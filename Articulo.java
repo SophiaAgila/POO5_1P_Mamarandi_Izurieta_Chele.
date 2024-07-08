@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import main.java.com.revista.util.Persistencia;
 import main.java.com.revista.util.Archivos;
-
+r
 public class Articulo {
     private String codigo;
     private String titulo;
